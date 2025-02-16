@@ -10,16 +10,31 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Copy, Share2 } from "lucide-react";
 import { useCreateSnippet } from "@/hooks/use-create-snippet";
 import { useToast } from "@/hooks/use-toast";
-import ShareModal from "@/components/ui/ShareModal"; 
+import ShareModal from "@/components/ui/ShareModal";
+import { Extension } from '@codemirror/state';
 
-const languages = {
-  javascript: { name: "JavaScript", extension: "js", setup: javascript },
-  python: { name: "Python", extension: "py", setup: python },
+type Language = {
+  name: string;
+  extension: string;
+  setup: () => Extension;
+};
+
+const languages: Record<string, Language> = {
+  javascript: { 
+    name: "JavaScript", 
+    extension: "js", 
+    setup: () => javascript() 
+  },
+  python: { 
+    name: "Python", 
+    extension: "py", 
+    setup: () => python() 
+  }
 };
 
 export default function Home() {
   const [code, setCode] = useState("");
-  const [language, setLanguage] = useState("javascript");
+  const [language, setLanguage] = useState<keyof typeof languages>("javascript");
   const { createSnippet, isLoading } = useCreateSnippet();
   const { toast } = useToast();
   const [isModalOpen, setModalOpen] = useState(false);
@@ -130,19 +145,20 @@ export default function Home() {
   };
   
   // Update the sharing URL display section
-  return (
+  rreturn (
     <main className="min-h-screen p-4">
       <div className="max-w-6xl mx-auto space-y-6">
         <h1 className="text-4xl font-bold">CtrlV</h1>
   
         <div className="flex items-center gap-4">
-          <Select value={language} onValueChange={setLanguage}>
+          <Select value={language} onValueChange={(value: keyof typeof languages) => setLanguage(value)}>
             <SelectTrigger className="w-40">
               <SelectValue placeholder="Select language" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="javascript">JavaScript</SelectItem>
-              <SelectItem value="python">Python</SelectItem>
+              {Object.entries(languages).map(([key, lang]) => (
+                <SelectItem key={key} value={key}>{lang.name}</SelectItem>
+              ))}
             </SelectContent>
           </Select>
           <Button variant="outline" size="icon" onClick={handleCopy}>
@@ -194,4 +210,5 @@ export default function Home() {
         />
       </div>
     </main>
-  )};
+  );
+}
