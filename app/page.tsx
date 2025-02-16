@@ -145,7 +145,7 @@ export default function Home() {
   };
   
   // Update the sharing URL display section
-  rreturn (
+  return (
     <main className="min-h-screen p-4">
       <div className="max-w-6xl mx-auto space-y-6">
         <h1 className="text-4xl font-bold">CtrlV</h1>
