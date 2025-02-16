@@ -85,7 +85,7 @@ export default function Home() {
     setModalOpen(true);
   };
   
-  const handleShare = async (expiration, oneTimeView) => {
+  const handleShare = async (expiration: string, oneTimeView: boolean) => {
     try {
       console.log('Starting share process...');
       const response = await createSnippet({ 
