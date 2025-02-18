@@ -7,7 +7,7 @@ import { python } from "@codemirror/lang-python";
 import { draculaInit } from "@uiw/codemirror-theme-dracula";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Copy, Share2 } from "lucide-react";
+import { Copy, Share2, Terminal } from "lucide-react";
 import { useCreateSnippet } from "@/hooks/use-create-snippet";
 import { useToast } from "@/hooks/use-toast";
 import ShareModal from "@/components/ui/ShareModal";
@@ -146,47 +146,66 @@ export default function Home() {
   
   // Update the sharing URL display section
   return (
-    <main className="min-h-screen p-4">
-      <div className="max-w-6xl mx-auto space-y-6">
-        <h1 className="text-4xl font-bold">CtrlV</h1>
-  
-        <div className="flex items-center gap-4">
+    <main className="min-h-screen bg-gradient-to-b from-zinc-900 to-black text-zinc-100">
+      <div className="max-w-6xl mx-auto p-6 space-y-8">
+        {/* Header Section */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Terminal className="h-8 w-8 text-emerald-500" />
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-emerald-400 to-blue-500 bg-clip-text text-transparent">
+              CtrlV
+            </h1>
+          </div>
+          <p className="text-zinc-400 text-sm">Code sharing at the speed of paste</p>
+        </div>
+
+        {/* Controls Section */}
+        <div className="flex items-center gap-4 bg-zinc-800/50 p-4 rounded-lg backdrop-blur-sm border border-zinc-700">
           <Select value={language} onValueChange={(value: keyof typeof languages) => setLanguage(value)}>
-            <SelectTrigger className="w-40">
+            <SelectTrigger className="w-40 bg-zinc-900 border-zinc-700">
               <SelectValue placeholder="Select language" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-zinc-900 border-zinc-700">
               {Object.entries(languages).map(([key, lang]) => (
-                <SelectItem key={key} value={key}>{lang.name}</SelectItem>
+                <SelectItem key={key} value={key} className="hover:bg-zinc-800">
+                  {lang.name}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
-          <Button variant="outline" size="icon" onClick={handleCopy}>
+          
+          <Button 
+            variant="outline" 
+            size="icon" 
+            onClick={handleCopy}
+            className="bg-zinc-900 border-zinc-700 hover:bg-zinc-800"
+          >
             <Copy className="h-4 w-4" />
           </Button>
+          
           <Button 
             onClick={openShareModal} 
             disabled={isLoading || !code.trim()} 
-            className="w-auto"
+            className="bg-emerald-600 hover:bg-emerald-700 text-white border-0"
           >
             <Share2 className="mr-2 h-4 w-4" /> Share
           </Button>
         </div>
-  
+
+        {/* Sharing URL Section */}
         {sharingUrl && (
-          <div className="mt-4 p-4 bg-secondary/50 border rounded-lg shadow-sm">
-            <p className="text-sm font-medium mb-2">Shareable Link:</p>
+          <div className="p-4 bg-zinc-800/50 border border-zinc-700 rounded-lg backdrop-blur-sm">
+            <p className="text-sm font-medium mb-2 text-zinc-300">Shareable Link:</p>
             <div className="flex items-center gap-2">
               <input 
                 type="text" 
                 value={sharingUrl} 
                 readOnly 
-                className="flex-1 p-2 bg-background border rounded text-sm font-mono"
+                className="flex-1 p-2 bg-zinc-900 border border-zinc-700 rounded text-sm font-mono text-zinc-300"
               />
               <Button 
                 onClick={() => copyToClipboard(sharingUrl)}
-                variant="secondary"
-                className="flex-shrink-0"
+                className="bg-zinc-900 hover:bg-zinc-800 border-zinc-700"
               >
                 <Copy className="h-4 w-4 mr-2" />
                 Copy
@@ -194,15 +213,19 @@ export default function Home() {
             </div>
           </div>
         )}
-  
-        <CodeMirror 
-          value={code} 
-          height="600px" 
-          theme={draculaInit()} 
-          extensions={[languages[language].setup()]} 
-          onChange={setCode} 
-        />
-  
+
+        {/* Code Editor Section */}
+        <div className="border border-zinc-700 rounded-lg overflow-hidden">
+          <CodeMirror 
+            value={code} 
+            height="600px" 
+            theme={draculaInit()} 
+            extensions={[languages[language].setup()]} 
+            onChange={setCode}
+            className="bg-zinc-900"
+          />
+        </div>
+
         <ShareModal 
           isOpen={isModalOpen} 
           onClose={() => setModalOpen(false)} 
