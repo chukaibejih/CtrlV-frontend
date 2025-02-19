@@ -74,11 +74,6 @@ export default function SnippetViewer({ snippet }: SnippetViewerProps) {
           className="text-base"
         />
       </div>
-      
-      <div className="flex justify-center items-center gap-2 text-zinc-400 text-sm mt-6">
-        <Terminal className="h-4 w-4 text-emerald-500" />
-        <p>CtrlV – Code sharing at the speed of paste.</p>
-      </div>
     </div>
   );
 }
