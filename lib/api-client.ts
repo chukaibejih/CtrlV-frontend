@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create axios instance with default config
 const apiClient = axios.create({
-  baseURL: process.env.BASE_API_URL || 'http://localhost:8000',
+  baseURL: process.env.BASE_API_URL || 'https://ctrlv-backend.onrender.com',
   headers: {
     'Content-Type': 'application/json',
   },
