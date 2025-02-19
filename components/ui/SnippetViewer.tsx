@@ -7,7 +7,7 @@ import { draculaInit } from '@uiw/codemirror-theme-dracula';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { PlusCircle } from 'lucide-react';
+import { PlusCircle, Terminal, Code } from 'lucide-react';
 
 const CopyButton = dynamic(() => import('@/components/ui/CopyButton'), { ssr: false });
 
@@ -27,51 +27,58 @@ interface SnippetViewerProps {
 
 export default function SnippetViewer({ snippet }: SnippetViewerProps) {
   return (
-    <main className="min-h-screen bg-background p-4 md:p-8">
-      <div className="max-w-6xl mx-auto space-y-6">
-        <div className="flex items-center justify-between">
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-zinc-800/50 p-4 rounded-lg backdrop-blur-sm border border-zinc-700">
+        <div className="flex items-center gap-2">
+          <Code className="h-5 w-5 text-emerald-400" />
           <div>
-            <h1 className="text-4xl font-bold">Shared Snippet</h1>
-            <p className="text-sm text-muted-foreground mt-1">
+            <h2 className="text-xl font-semibold text-zinc-100">Shared Snippet</h2>
+            <p className="text-sm text-zinc-400 mt-1">
               Language:{' '}
-              {languages[snippet.language as keyof typeof languages]?.name ||
-                snippet.language}
+              <span className="text-emerald-400">
+                {languages[snippet.language as keyof typeof languages]?.name ||
+                  snippet.language}
+              </span>
             </p>
           </div>
-          <div className="flex items-center gap-3">
-            <CopyButton content={snippet.content} />
-            <Link href="/">
-              <Button variant="default" className="gap-2">
-                <PlusCircle className="h-4 w-4" />
-                Create New Snippet
-              </Button>
-            </Link>
-          </div>
         </div>
         
-        <div className="border rounded-lg overflow-hidden">
-          <CodeMirror
-            value={snippet.content}
-            height="600px"
-            theme={draculaInit({
-              settings: {
-                fontFamily: 'monospace',
-                background: '#282a36',
-              },
-            })}
-            extensions={[
-              languages[snippet.language as keyof typeof languages]?.setup() ||
-                javascript(),
-            ]}
-            editable={false}
-            className="text-base"
-          />
+        <div className="flex items-center gap-3">
+          <CopyButton content={snippet.content} />
+          <Link href="/">
+            <Button 
+              className="bg-zinc-900 hover:bg-zinc-800 text-zinc-200 border border-zinc-700 gap-2"
+            >
+              <PlusCircle className="h-4 w-4 text-emerald-400" />
+              Create New
+            </Button>
+          </Link>
         </div>
-        
-        <p className="text-sm text-muted-foreground text-center">
-        CtrlV – Code sharing at the speed of paste.
-        </p>
       </div>
-    </main>
+      
+      <div className="border border-zinc-700 rounded-lg overflow-hidden">
+        <CodeMirror
+          value={snippet.content}
+          height="600px"
+          theme={draculaInit({
+            settings: {
+              fontFamily: 'monospace',
+              background: '#1e1e2e', // Slightly darker background to match theme
+            },
+          })}
+          extensions={[
+            languages[snippet.language as keyof typeof languages]?.setup() ||
+              javascript(),
+          ]}
+          editable={false}
+          className="text-base"
+        />
+      </div>
+      
+      <div className="flex justify-center items-center gap-2 text-zinc-400 text-sm mt-6">
+        <Terminal className="h-4 w-4 text-emerald-500" />
+        <p>CtrlV – Code sharing at the speed of paste.</p>
+      </div>
+    </div>
   );
 }
