@@ -1,19 +1,87 @@
 "use client";
-
 import CodeMirror from '@uiw/react-codemirror';
 import { javascript } from '@codemirror/lang-javascript';
 import { python } from '@codemirror/lang-python';
+import { java } from "@codemirror/lang-java";
+import { cpp } from "@codemirror/lang-cpp";
+import { php } from "@codemirror/lang-php";
+import { rust } from "@codemirror/lang-rust";
+import { sql } from "@codemirror/lang-sql";
+import { html } from "@codemirror/lang-html";
+import { css } from "@codemirror/lang-css";
+import { markdown } from "@codemirror/lang-markdown";
+import { json } from "@codemirror/lang-json";
 import { draculaInit } from '@uiw/codemirror-theme-dracula';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { PlusCircle, Terminal, Code } from 'lucide-react';
+import { PlusCircle, Code } from 'lucide-react';
+import { Extension } from '@codemirror/state';
 
 const CopyButton = dynamic(() => import('@/components/ui/CopyButton'), { ssr: false });
 
-const languages = {
-  javascript: { name: "JavaScript", extension: "js", setup: javascript },
-  python: { name: "Python", extension: "py", setup: python },
+// Make sure this matches the languages object in app/page.tsx
+const languages: Record<string, { name: string; extension: string; setup: () => Extension }> = {
+  javascript: { 
+    name: "JavaScript", 
+    extension: "js", 
+    setup: () => javascript() 
+  },
+  typescript: {
+    name: "TypeScript",
+    extension: "ts",
+    setup: () => javascript({ typescript: true })
+  },
+  python: { 
+    name: "Python", 
+    extension: "py", 
+    setup: () => python() 
+  },
+  java: {
+    name: "Java",
+    extension: "java",
+    setup: () => java()
+  },
+  cpp: {
+    name: "C++",
+    extension: "cpp",
+    setup: () => cpp()
+  },
+  php: {
+    name: "PHP",
+    extension: "php",
+    setup: () => php()
+  },
+  rust: {
+    name: "Rust",
+    extension: "rs",
+    setup: () => rust()
+  },
+  sql: {
+    name: "SQL",
+    extension: "sql",
+    setup: () => sql()
+  },
+  html: {
+    name: "HTML",
+    extension: "html",
+    setup: () => html()
+  },
+  css: {
+    name: "CSS",
+    extension: "css",
+    setup: () => css()
+  },
+  markdown: {
+    name: "Markdown",
+    extension: "md",
+    setup: () => markdown()
+  },
+  json: {
+    name: "JSON",
+    extension: "json",
+    setup: () => json()
+  }
 };
 
 interface Snippet {
@@ -60,18 +128,13 @@ export default function SnippetViewer({ snippet }: SnippetViewerProps) {
         <CodeMirror
           value={snippet.content}
           height="600px"
-          theme={draculaInit({
-            settings: {
-              fontFamily: 'monospace',
-              background: '#1e1e2e', // Slightly darker background to match theme
-            },
-          })}
+          theme={draculaInit()} // Use the default theme without overrides
           extensions={[
             languages[snippet.language as keyof typeof languages]?.setup() ||
-              javascript(),
+              javascript()
           ]}
           editable={false}
-          className="text-base"
+          className="bg-zinc-900" // Match the className used in the editor
         />
       </div>
     </div>

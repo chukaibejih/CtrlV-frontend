@@ -4,6 +4,15 @@ import { useState } from "react";
 import CodeMirror from "@uiw/react-codemirror";
 import { javascript } from "@codemirror/lang-javascript";
 import { python } from "@codemirror/lang-python";
+import { java } from "@codemirror/lang-java";
+import { cpp } from "@codemirror/lang-cpp";
+import { php } from "@codemirror/lang-php";
+import { rust } from "@codemirror/lang-rust";
+import { sql } from "@codemirror/lang-sql";
+import { html } from "@codemirror/lang-html";
+import { css } from "@codemirror/lang-css";
+import { markdown } from "@codemirror/lang-markdown";
+import { json } from "@codemirror/lang-json";
 import { draculaInit } from "@uiw/codemirror-theme-dracula";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -25,10 +34,60 @@ const languages: Record<string, Language> = {
     extension: "js", 
     setup: () => javascript() 
   },
+  typescript: {
+    name: "TypeScript",
+    extension: "ts",
+    setup: () => javascript({ typescript: true })
+  },
   python: { 
     name: "Python", 
     extension: "py", 
     setup: () => python() 
+  },
+  java: {
+    name: "Java",
+    extension: "java",
+    setup: () => java()
+  },
+  cpp: {
+    name: "C++",
+    extension: "cpp",
+    setup: () => cpp()
+  },
+  php: {
+    name: "PHP",
+    extension: "php",
+    setup: () => php()
+  },
+  rust: {
+    name: "Rust",
+    extension: "rs",
+    setup: () => rust()
+  },
+  sql: {
+    name: "SQL",
+    extension: "sql",
+    setup: () => sql()
+  },
+  html: {
+    name: "HTML",
+    extension: "html",
+    setup: () => html()
+  },
+  css: {
+    name: "CSS",
+    extension: "css",
+    setup: () => css()
+  },
+  markdown: {
+    name: "Markdown",
+    extension: "md",
+    setup: () => markdown()
+  },
+  json: {
+    name: "JSON",
+    extension: "json",
+    setup: () => json()
   }
 };
 
@@ -165,7 +224,7 @@ export default function Home() {
             <SelectTrigger className="w-40 bg-zinc-900 border-zinc-700">
               <SelectValue placeholder="Select language" />
             </SelectTrigger>
-            <SelectContent className="bg-zinc-900 border-zinc-700">
+            <SelectContent className="bg-zinc-900 border-zinc-700 max-h-60 overflow-y-auto">
               {Object.entries(languages).map(([key, lang]) => (
                 <SelectItem key={key} value={key} className="hover:bg-zinc-800">
                   {lang.name}
@@ -225,6 +284,14 @@ export default function Home() {
             className="bg-zinc-900"
           />
         </div>
+
+        {/* Add placeholder text when editor is empty */}
+        {!code.trim() && (
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-zinc-500 text-center pointer-events-none">
+            <p className="text-lg mb-2">Paste your code here, or start typing</p>
+            <p className="text-sm">Select a language and hit Share when you're ready</p>
+          </div>
+        )}
 
         <ShareModal 
           isOpen={isModalOpen} 
