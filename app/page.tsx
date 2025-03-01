@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -19,7 +20,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Copy, Share2, Terminal } from "lucide-react";
 import { useCreateSnippet } from "@/hooks/use-create-snippet";
 import { useToast } from "@/hooks/use-toast";
-import ShareModal from "@/components/ui/ShareModal";
+import ShareModal, { ShareOptions } from "@/components/ui/ShareModal";
 import { Extension } from '@codemirror/state';
 
 type Language = {
@@ -28,67 +29,56 @@ type Language = {
   setup: () => Extension;
 };
 
+// Extended language support to match backend
 const languages: Record<string, Language> = {
-  javascript: { 
-    name: "JavaScript", 
-    extension: "js", 
-    setup: () => javascript() 
-  },
-  typescript: {
-    name: "TypeScript",
-    extension: "ts",
-    setup: () => javascript({ typescript: true })
-  },
-  python: { 
-    name: "Python", 
-    extension: "py", 
-    setup: () => python() 
-  },
-  java: {
-    name: "Java",
-    extension: "java",
-    setup: () => java()
-  },
-  cpp: {
-    name: "C++",
-    extension: "cpp",
-    setup: () => cpp()
-  },
-  php: {
-    name: "PHP",
-    extension: "php",
-    setup: () => php()
-  },
-  rust: {
-    name: "Rust",
-    extension: "rs",
-    setup: () => rust()
-  },
-  sql: {
-    name: "SQL",
-    extension: "sql",
-    setup: () => sql()
-  },
-  html: {
-    name: "HTML",
-    extension: "html",
-    setup: () => html()
-  },
-  css: {
-    name: "CSS",
-    extension: "css",
-    setup: () => css()
-  },
-  markdown: {
-    name: "Markdown",
-    extension: "md",
-    setup: () => markdown()
-  },
-  json: {
-    name: "JSON",
-    extension: "json",
-    setup: () => json()
-  }
+  // Common web languages
+  javascript: { name: "JavaScript", extension: "js", setup: () => javascript() },
+  typescript: { name: "TypeScript", extension: "ts", setup: () => javascript({ typescript: true }) },
+  html: { name: "HTML", extension: "html", setup: () => html() },
+  css: { name: "CSS", extension: "css", setup: () => css() },
+  php: { name: "PHP", extension: "php", setup: () => php() },
+  
+  // Backend languages
+  python: { name: "Python", extension: "py", setup: () => python() },
+  java: { name: "Java", extension: "java", setup: () => java() },
+  ruby: { name: "Ruby", extension: "rb", setup: () => javascript() },  // Fallback
+  go: { name: "Go", extension: "go", setup: () => javascript() },      // Fallback
+  rust: { name: "Rust", extension: "rs", setup: () => rust() },
+  c: { name: "C", extension: "c", setup: () => cpp() },
+  cpp: { name: "C++", extension: "cpp", setup: () => cpp() },
+  csharp: { name: "C#", extension: "cs", setup: () => javascript() },  // Fallback
+  
+  // Data and config languages
+  json: { name: "JSON", extension: "json", setup: () => json() },
+  yaml: { name: "YAML", extension: "yaml", setup: () => javascript() }, // Fallback
+  xml: { name: "XML", extension: "xml", setup: () => html() },         // Using HTML as fallback
+  sql: { name: "SQL", extension: "sql", setup: () => sql() },
+  markdown: { name: "Markdown", extension: "md", setup: () => markdown() },
+  
+  // Shell scripting
+  bash: { name: "Bash", extension: "sh", setup: () => javascript() },   // Fallback
+  powershell: { name: "PowerShell", extension: "ps1", setup: () => javascript() }, // Fallback
+  shell: { name: "Shell", extension: "sh", setup: () => javascript() }, // Fallback
+  
+  // Mobile
+  swift: { name: "Swift", extension: "swift", setup: () => javascript() }, // Fallback
+  kotlin: { name: "Kotlin", extension: "kt", setup: () => javascript() },  // Fallback
+  objectivec: { name: "Objective-C", extension: "m", setup: () => cpp() }, // Using C++ as fallback
+  
+  // Other languages
+  perl: { name: "Perl", extension: "pl", setup: () => javascript() },      // Fallback
+  haskell: { name: "Haskell", extension: "hs", setup: () => javascript() }, // Fallback
+  scala: { name: "Scala", extension: "scala", setup: () => javascript() },  // Fallback
+  lua: { name: "Lua", extension: "lua", setup: () => javascript() },        // Fallback
+  r: { name: "R", extension: "r", setup: () => javascript() },              // Fallback
+  dart: { name: "Dart", extension: "dart", setup: () => javascript() },     // Fallback
+  elixir: { name: "Elixir", extension: "ex", setup: () => javascript() },   // Fallback
+  clojure: { name: "Clojure", extension: "clj", setup: () => javascript() }, // Fallback
+  
+  // Misc formats
+  diff: { name: "Diff", extension: "diff", setup: () => javascript() },      // Fallback
+  plaintext: { name: "Plain Text", extension: "txt", setup: () => javascript() }, // Fallback
+  dockerfile: { name: "Dockerfile", extension: "dockerfile", setup: () => javascript() } // Fallback
 };
 
 export default function Home() {
@@ -159,15 +149,10 @@ export default function Home() {
     setModalOpen(true);
   };
   
-  const handleShare = async (expiration: string, oneTimeView: boolean) => {
+  const handleShare = async (options: ShareOptions) => {
     try {
       console.log('Starting share process...');
-      const response = await createSnippet({ 
-        content: code, 
-        language, 
-        expiration, 
-        one_time_view: oneTimeView 
-      });
+      const response = await createSnippet(code, language, options);
       
       console.log('API Response:', response);
       
@@ -219,7 +204,7 @@ export default function Home() {
         </div>
 
         {/* Controls Section */}
-        <div className="flex items-center gap-4 bg-zinc-800/50 p-4 rounded-lg backdrop-blur-sm border border-zinc-700">
+        <div className="flex flex-wrap items-center gap-4 bg-zinc-800/50 p-4 rounded-lg backdrop-blur-sm border border-zinc-700">
           <Select value={language} onValueChange={(value: keyof typeof languages) => setLanguage(value)}>
             <SelectTrigger className="w-40 bg-zinc-900 border-zinc-700">
               <SelectValue placeholder="Select language" />
