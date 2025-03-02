@@ -1,17 +1,18 @@
-// Create a component: components/GoogleAnalytics.tsx
 "use client";
 
 import Script from 'next/script';
 import { usePathname, useSearchParams } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, Suspense } from 'react';
 
+// Add type definitions for gtag
 declare global {
   interface Window {
-    gtag?: (...args: any[]) => void;
+    dataLayer: any[];
+    gtag: (...args: any[]) => void;
   }
 }
 
-export default function GoogleAnalytics({ GA_MEASUREMENT_ID }: { GA_MEASUREMENT_ID: string }) {
+function GoogleAnalyticsInner({ GA_MEASUREMENT_ID }: { GA_MEASUREMENT_ID: string }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
@@ -23,6 +24,10 @@ export default function GoogleAnalytics({ GA_MEASUREMENT_ID }: { GA_MEASUREMENT_
     }
   }, [pathname, searchParams, GA_MEASUREMENT_ID]);
 
+  return null;
+}
+
+export default function GoogleAnalytics({ GA_MEASUREMENT_ID }: { GA_MEASUREMENT_ID: string }) {
   return (
     <>
       <Script
@@ -41,6 +46,9 @@ export default function GoogleAnalytics({ GA_MEASUREMENT_ID }: { GA_MEASUREMENT_
           `,
         }}
       />
+      <Suspense fallback={null}>
+        <GoogleAnalyticsInner GA_MEASUREMENT_ID={GA_MEASUREMENT_ID} />
+      </Suspense>
     </>
   );
 }
