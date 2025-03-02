@@ -2,6 +2,7 @@ import './globals.css';
 import type { Metadata } from 'next';
 import { Inter, Fira_Code } from 'next/font/google';
 import { Toaster } from '@/components/ui/toaster';
+import GoogleAnalytics from '@/components/GoogleAnalytics';
 
 // Load Inter for UI text
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
@@ -37,7 +38,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark">
+      <head>
+        {/* Google Analytics code will be injected by Next.js */}
+      </head>
       <body className={`${inter.variable} ${firaCode.variable} font-sans antialiased`}>
+        {process.env.NEXT_PUBLIC_GA_ID && (
+          <GoogleAnalytics GA_MEASUREMENT_ID={process.env.NEXT_PUBLIC_GA_ID} />
+        )}
         {children}
         <Toaster />
         {/* Footer */}
