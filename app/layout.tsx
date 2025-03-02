@@ -2,11 +2,10 @@ import './globals.css';
 import type { Metadata } from 'next';
 import { Inter, Fira_Code } from 'next/font/google';
 import { Toaster } from '@/components/ui/toaster';
-import GoogleAnalytics from '@/components/GoogleAnalytics';
+import { GoogleAnalytics } from '@next/third-parties/google';
 
 // Load Inter for UI text
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
-
 // Load Fira Code for code blocks
 const firaCode = Fira_Code({ subsets: ['latin'], variable: '--font-fira-code' });
 
@@ -34,9 +33,6 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className={`${inter.variable} ${firaCode.variable} font-sans antialiased`}>
-        {process.env.NEXT_PUBLIC_GA_ID && (
-          <GoogleAnalytics GA_MEASUREMENT_ID={process.env.NEXT_PUBLIC_GA_ID} />
-        )}
         {children}
         <Toaster />
         <footer className="py-6 px-8 bg-zinc-900/80 border-t border-zinc-800">
@@ -48,6 +44,9 @@ export default function RootLayout({
             </div>
           </div>
         </footer>
+        {process.env.NEXT_PUBLIC_GA_ID && (
+          <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
+        )}
       </body>
     </html>
   );
